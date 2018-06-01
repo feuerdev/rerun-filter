@@ -3,7 +3,7 @@
 	
 	"name": "RerunFilter",
 	"description": "This extension enables you to filter rebroadcasts out of your Twitch following list.",
-	"version": "0.1",
+	"version": "0.2",
 	"author": "jannik@feuer.io",
 	
 	"content_scripts": [

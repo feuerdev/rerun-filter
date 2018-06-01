@@ -4,63 +4,68 @@
 let blocked_words = ["rerun","Rerun", "RERUN", "REBROADCAST", "Rebroadcast"];
 
 /*
- * This timer is used to determine wether the streams have been loaded yet.
+ * Fast Interval which gets used at the beginning to hide streams fast.
  */
-var timer;
+var fastTimer;
+
+/*
+ * Slow interval which gets used after the fast interval to check if new reruns have been added.
+ */
+var slowTimer;
 
 /**
- * Time in milliseconds after which to stop checking if the streams have loaded. To prevent running indefinitely if no streams are online.
+ * Fast interval
  */
-let maxLoadTime = 10000;
+let checkIntervalFast = 100;
 
 /**
- * Time in milliseconds after which to check if streams have been loaded.
+ * Slow interval
  */
-let checkInterval = 500;
+let checkIntervalSlow = 10000;
 
 /**
- * Hide all divs with class ".stream.item" which title element contains a blocked word.
+ * Find all Divs with the class "live-channel-card", which inner html contains a blocked word.
  */
-function hideReruns() {
-	let streams = $(".stream.item");
-	streams.each(function() {
-		let stream = $(this);
-		let titleElement = stream.find("p.title");
-		let title = titleElement.text();
+function findReruns() {
+	console.log("Trying to hide reruns");
+	let streams = document.querySelectorAll('.live-channel-card');
+	streams.forEach(function(stream) {
+		switchTimer();
+		const inner = stream.innerHTML;
 		let filter = false;
 		blocked_words.forEach(function(blocked) {
 			if(!filter) {
-				if(title.includes(blocked)) {
+				if(inner.includes(blocked)) {
 					filter = true;
-					console.log("Hiding Stream: "+ title);
-					stream.hide();
+					hideRerun(stream);
 				}
 			}
 		});		
 	});
 };
 
-/*
- * Runs the hideReruns method if streams have been loaded.
+/**
+ * Removes a rerun div
+ * @param {div} stream 
  */
-function checkLoadingStatus() {
-	if(maxLoadTime > 0) {
-		console.log("Checking if streams are loaded");
-		if($(".stream.item").length > 0) {
-			console.log("Streams are loaded");
-			clearInterval(timer);
-			hideReruns();
-		} else {
-			maxLoadTime -= checkInterval;
-		}
-	} else {
-		console.log("Max load time exceeded.");
-		clearInterval(timer);
-	}
+function hideRerun(stream) {
+	console.log("Found a Rerun! Hiding Stream!");
+	stream.parentNode.removeChild(stream);	
 }
 
-//Start the timer.
+/**
+ * Switches the timer from a fast to slow interval rate.
+ */
+function switchTimer() {
+	if(fastTimer) {
+		clearInterval(fastTimer);
+		setInterval(findReruns, checkIntervalSlow);
+		fastTimer = null;
+	}	
+}
+
+//Start the Interval.
 console.log("Rerunfilter checking in...");
-timer = setInterval(checkLoadingStatus, checkInterval);
+fastTimer = setInterval(findReruns, checkIntervalFast);
 
 
