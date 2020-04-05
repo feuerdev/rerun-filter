@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
 	
-	"name": "RerunFilter",
-	"description": "This extension enables you to filter rebroadcasts out of your Twitch following list.",
+	"name": "Twitch Rerun Filter",
+	"description": "Nobody likes reruns!",
 	"version": "1.0",
 	"author": "jannik@feuer.io",
 	
