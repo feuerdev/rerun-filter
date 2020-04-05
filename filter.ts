@@ -32,6 +32,7 @@ class Rerun {
  * Singleton Filter instance
  */
 class Filter {
+	
 	static INSTANCE: Filter = null;
 
 	static getInstance(): Filter {
@@ -106,6 +107,10 @@ class Filter {
 			chrome.runtime.sendMessage({message: this.hiddenElements});
 		}
 	}
+	
+	clearReruns() {
+		this.hiddenElements = [];
+	}
 }
 
 console.log("New instance requested");
@@ -113,5 +118,7 @@ let filter = Filter.getInstance();
 
 //Receives info from background
 chrome.runtime.onMessage.addListener(function(request, sender) {
-  console.log(request.message);
+	if(request === "onNavigate") {
+		Filter.getInstance().clearReruns();
+	}
 });
