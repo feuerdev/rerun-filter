@@ -52,6 +52,6 @@ function setPageActionIcon(tab) {
       tabId: tab.id
     });
   };
-  img.src = "images/get_started16.png";
+  img.src = "images/logo16.png";
 }
 
