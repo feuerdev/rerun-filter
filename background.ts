@@ -1,8 +1,9 @@
-let reruns = [];
+const rerunCountsByTab = new Map<number, number>();
 
 //receive info to content script
 chrome.runtime.onMessage.addListener(function (request, sender) {
-  reruns = request.message;
+  if (!sender.tab || typeof sender.tab.id !== "number" || !Array.isArray(request?.message)) return;
+  rerunCountsByTab.set(sender.tab.id, request.message.length);
   setPageActionIcon(sender.tab);
 });
 
@@ -11,7 +12,7 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.status === "complete") { //URL has changed. clear reruns and update icon
     chrome.tabs.sendMessage(tabId, "onNavigate");
-    reruns = [];
+    rerunCountsByTab.delete(tabId);
     setPageActionIcon(tab);
   }
 }
@@ -21,12 +22,13 @@ function setPageActionIcon(tab) {
   var canvas = document.createElement('canvas');
   var img = document.createElement('img');
   img.onload = function () {
+    const rerunCount = rerunCountsByTab.get(tab.id) || 0;
 
     /* Draw the background image */
     var context = canvas.getContext('2d');
     context.drawImage(img, 0, 2);
 
-    if (reruns.length > 0) {
+    if (rerunCount > 0) {
       /* Draw the "badge" */
       var grd = context.createLinearGradient(0, 10, 0, 19);
       grd.addColorStop(0, 'rgb(255, 100, 100)');
@@ -44,7 +46,7 @@ function setPageActionIcon(tab) {
       /* Draw some text */
       context.fillStyle = "white";
       context.font = "bold 10px Sans-Serif";
-      context.fillText("" + reruns.length, 12, 17, 5);
+      context.fillText("" + rerunCount, 12, 17, 5);
     }
 
     chrome.pageAction.setIcon({
@@ -55,3 +57,7 @@ function setPageActionIcon(tab) {
   img.src = "images/logo16.png";
 }
 
+
+chrome.tabs.onRemoved.addListener(function (tabId) {
+  rerunCountsByTab.delete(tabId);
+});
