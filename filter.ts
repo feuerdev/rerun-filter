@@ -38,7 +38,8 @@ class Filter {
 	static getInstance(): Filter {
 		if (this.INSTANCE == null) {
 			console.log("New instance created");
-			return new Filter();
+			this.INSTANCE = new Filter();
+			return this.INSTANCE;
 		}
 		console.log("old instance returned");
 		return this.INSTANCE;

@@ -1,0 +1,15 @@
+{
+  "name": "rerun-filter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Historical Twitch rerun-filter extension",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch",
+    "test": "node --test --test-concurrency=1 tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.0.103",
+    "typescript": "4.1.5"
+  }
+}
